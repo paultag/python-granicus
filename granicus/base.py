@@ -1,19 +1,6 @@
 import requests
+import time
 
-
-class GranicusAPIIterator(object):
-    def __init__(self, method):
-        self.method = method
-        self.page = -1
-        self.max_pages = 0
-
-    # def iterpage(self):
-    #     self.page += 1
-    #     response = self.method(page=self.page)
-    #
-    # def iterate(self):
-    #     while self.page < self.max_pages:
-    #         yield from self.iterpage()
 
 class GranicusBase(object):
     GRANICUS_API_BASE = "http://demos.granicuslabs.com/v1"
@@ -27,6 +14,8 @@ class GranicusBase(object):
             self.jurisdiction,
             endpoint
         )
+
+        time.sleep(2)
 
         return requests.request(
             method,
