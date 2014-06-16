@@ -18,11 +18,10 @@ def fix_participant(participant):
 
 def fix_agenda(item):
     if 'media' in item:
-        if media == {}:
+        if item['media'] == {}:
             item['media'] = []
         else:
             item['media'] = [item['media']]
-    print(item)
     return item
 
 
@@ -36,7 +35,7 @@ class Event(GranicusBase):
         event = self.request("GET", 'events/%s' % (self.id), params=kwargs)
         ocde = OCDEvent(
             event['description'],
-            event['when'],
+            parsedatetime(event['when']),
             event.get('location', "unknown")
         )
         blacklisted = ("when", "description", "location")
@@ -55,13 +54,15 @@ class Event(GranicusBase):
                 for p in v:
                     fix_participant(p)
 
-
-            if k in ['start_time']:
-                v = parsedatetime(v)
-
             if k == 'agenda':
                 for p in v:
                     fix_agenda(p)
+
+            if k == 'status':
+                try:
+                    v = {"scheduled": "tentative"}[v]
+                except KeyError:
+                    pass
 
             setattr(ocde, k, v)
         ocde.validate()
