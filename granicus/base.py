@@ -18,12 +18,15 @@ class GranicusBase(object):
         time.sleep(2)
 
         try:
-            return requests.request(
+            r = requests.request(
                 method,
                 url,
                 params=params,
                 data=data
-            ).json()
+            )
+            if "We're sorry, but something went wrong." in r.text:
+                raise ValueError("Something went wrong.")
+            return r.json()
         except requests.exceptions.ConnectionError:
             print("  Uch, server broke. Backing off quickly.")
             time.sleep(5)

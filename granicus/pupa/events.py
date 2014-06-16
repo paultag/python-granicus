@@ -14,4 +14,8 @@ class GranicusEventScraper(Scraper):
     def scrape(self):
         self.wrapper = Events(self._granicus_jurisdiction)
         for event in self.wrapper.getall():
-            yield event.get()
+            try:
+                yield event.get()
+            except ValueError:
+                print("  => bad server response for {}".format(event.id))
+                continue
