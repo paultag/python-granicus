@@ -1,5 +1,10 @@
 from granicus.base import GranicusBase
 from pupa.scrape.event import Event as OCDEvent
+import dateutil.parser
+
+
+def parsedatetime(date):
+    return dateutil.parser.parse(date)
 
 
 class Event(GranicusBase):
@@ -26,6 +31,8 @@ class Event(GranicusBase):
             if k == 'organization':
                 # ocde.add_participant(id=v['id'], name=v['name'])
                 continue
+
+            print(k)
 
             setattr(ocde, k, v)
         ocde.validate()
