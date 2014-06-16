@@ -33,8 +33,6 @@ def fix_location(location):
             location['coordinates'] = {}
         else:
             location['coordinates'] = dict(location['coordinates'])
-
-    print(location)
     return location
 
 
