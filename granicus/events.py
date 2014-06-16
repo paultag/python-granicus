@@ -7,6 +7,25 @@ def parsedatetime(date):
     return dateutil.parser.parse(date)
 
 
+def fix_participant(participant):
+    participant['type'] = {
+        "meeting body": "organization",
+    }[participant.pop('participant_type')]
+    participant['id'] = participant.pop('participant_id')
+    participant['name'] = participant.pop('participant')
+    return participant
+
+
+def fix_agenda(item):
+    if 'media' in item:
+        if media == {}:
+            item['media'] = []
+        else:
+            item['media'] = [item['media']]
+    print(item)
+    return item
+
+
 class Event(GranicusBase):
     def __init__(self, jurisdiction, id, data):
         super(Event, self).__init__(jurisdiction)
@@ -32,7 +51,17 @@ class Event(GranicusBase):
                 # ocde.add_participant(id=v['id'], name=v['name'])
                 continue
 
-            print(k)
+            if k == 'participants':
+                for p in v:
+                    fix_participant(p)
+
+
+            if k in ['start_time']:
+                v = parsedatetime(v)
+
+            if k == 'agenda':
+                for p in v:
+                    fix_agenda(p)
 
             setattr(ocde, k, v)
         ocde.validate()
