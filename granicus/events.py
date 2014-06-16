@@ -22,7 +22,20 @@ def fix_agenda(item):
             item['media'] = []
         else:
             item['media'] = [item['media']]
+    if item['description'] == "":
+        item['description'] = "unknown"
     return item
+
+
+def fix_location(location):
+    if 'coordinates' in location:
+        if location['coordinates'] == []:
+            location['coordinates'] = {}
+        else:
+            location['coordinates'] = dict(location['coordinates'])
+
+    print(location)
+    return location
 
 
 class Event(GranicusBase):
@@ -33,11 +46,15 @@ class Event(GranicusBase):
 
     def get(self, **kwargs):
         event = self.request("GET", 'events/%s' % (self.id), params=kwargs)
+        if event['description'] == '':
+            event['description'] = "unknown"
+
         ocde = OCDEvent(
             event['description'],
             parsedatetime(event['when']),
-            event.get('location', "unknown")
+            "",
         )
+        ocde.location = fix_location(event.get('location', {"name": "unknown"}))
         blacklisted = ("when", "description", "location")
         for k, v in event.items():
             if k in blacklisted:
