@@ -17,9 +17,15 @@ class GranicusBase(object):
 
         time.sleep(2)
 
-        return requests.request(
-            method,
-            url,
-            params=params,
-            data=data
-        ).json()
+        try:
+            return requests.request(
+                method,
+                url,
+                params=params,
+                data=data
+            ).json()
+        except requests.exceptions.ConnectionError:
+            print("  Uch, server broke. Backing off quickly.")
+            time.sleep(5)
+            print("    Retrying request.")
+            return self.request(method, endpoint, params=params, data=data)
